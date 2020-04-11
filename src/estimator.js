@@ -12,31 +12,34 @@ const calcDays = (periodType, elapsedTime) => {
 
 const covid19ImpactEstimator = (data) => {
   const {
-    periodType, timeToElapse, reportedCases, totalHospitalBeds
+    periodType, timeToElapse, reportedCases, totalHospitalBeds, region
   } = data;
+  const { avgDailyIncomeInUSD, avgDailyIncomePopulation } = region;
 
   const days = calcDays(periodType, timeToElapse);
   const currentlyInfectedImpact = reportedCases * 10;
   const currentlyInfectedSevere = reportedCases * 50;
-  const infectionsByRequestedTimeImpact = currentlyInfectedImpact * (2 ** Math.trunc(days / 3));
-  const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** Math.trunc(days / 3));
-  const severeCasesByRequestedTimeImpact = Math.trunc(0.15 * infectionsByRequestedTimeImpact);
-  const severeCasesByRequestedTimeSevere = Math.trunc(0.15 * infectionsByRequestedTimeSevere);
+  const infectionsImpact = currentlyInfectedImpact * (2 ** Math.trunc(days / 3));
+  const infectionsSevere = currentlyInfectedSevere * (2 ** Math.trunc(days / 3));
+  const severeCasesByRequestedTimeImpact = Math.trunc(0.15 * infectionsImpact);
+  const severeCasesByRequestedTimeSevere = Math.trunc(0.15 * infectionsSevere);
   const availableBeds = 0.35 * totalHospitalBeds;
   const availableBedsImpact = Math.trunc(availableBeds - severeCasesByRequestedTimeImpact);
   const availableBedsSevere = Math.trunc(availableBeds - severeCasesByRequestedTimeSevere);
-  const icuCaseImpact = Math.trunc(0.05 * infectionsByRequestedTimeImpact);
-  const icuCaseSevere = Math.trunc(0.05 * infectionsByRequestedTimeSevere);
-  const ventCaseImpact = Math.trunc(0.02 * infectionsByRequestedTimeImpact);
-  const ventCaseSevere = Math.trunc(0.02 * infectionsByRequestedTimeSevere);
-  const dollarsImpact = Math.trunc((infectionsByRequestedTimeImpact * 0.65 * 1.5) / 30);
-  const dollarsSevere = Math.trunc((infectionsByRequestedTimeSevere * 0.65 * 1.5) / 30);
+  const icuCaseImpact = Math.trunc(0.05 * infectionsImpact);
+  const icuCaseSevere = Math.trunc(0.05 * infectionsSevere);
+  const ventCaseImpact = Math.trunc(0.02 * infectionsImpact);
+  const ventCaseSevere = Math.trunc(0.02 * infectionsSevere);
+  const incomeImpact = infectionsImpact * avgDailyIncomeInUSD * avgDailyIncomePopulation;
+  const incomeSevere = infectionsSevere * avgDailyIncomeInUSD * avgDailyIncomePopulation;
+  const dollarsImpact = Math.trunc(incomeImpact / days);
+  const dollarsSevere = Math.trunc(incomeSevere / days);
 
   const output = {
     data,
     impact: {
       currentlyInfected: currentlyInfectedImpact,
-      infectionsByRequestedTime: infectionsByRequestedTimeImpact,
+      infectionsByRequestedTime: infectionsImpact,
       severeCasesByRequestedTime: severeCasesByRequestedTimeImpact,
       hospitalBedsByRequestedTime: availableBedsImpact,
       casesForICUByRequestedTime: icuCaseImpact,
@@ -45,7 +48,7 @@ const covid19ImpactEstimator = (data) => {
     },
     severeImpact: {
       currentlyInfected: currentlyInfectedSevere,
-      infectionsByRequestedTime: infectionsByRequestedTimeSevere,
+      infectionsByRequestedTime: infectionsSevere,
       severeCasesByRequestedTime: severeCasesByRequestedTimeSevere,
       hospitalBedsByRequestedTime: availableBedsSevere,
       casesForICUByRequestedTime: icuCaseSevere,
