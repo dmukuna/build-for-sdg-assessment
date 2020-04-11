@@ -1,12 +1,25 @@
+const calcDays = (periodType, elapsedTime) => {
+  let days;
+  if (periodType === 'days') {
+    days = elapsedTime;
+  } else if (periodType === 'weeks') {
+    days = elapsedTime * 7;
+  } else {
+    days = elapsedTime * 20;
+  }
+  return days;
+};
+
 const covid19ImpactEstimator = (data) => {
   const {
-    reportedCases, totalHospitalBeds
+    periodType, timeToElapse, reportedCases, totalHospitalBeds
   } = data;
 
+  const days = calcDays(periodType, timeToElapse);
   const currentlyInfectedImpact = reportedCases * 10;
   const currentlyInfectedSevere = reportedCases * 50;
-  const infectionsByRequestedTimeImpact = currentlyInfectedImpact * (2 ** 9);
-  const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** 9);
+  const infectionsByRequestedTimeImpact = currentlyInfectedImpact * (2 ** Math.trunc(days / 3));
+  const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** Math.trunc(days / 3));
   const severeCasesByRequestedTimeImpact = Math.trunc(0.15 * infectionsByRequestedTimeImpact);
   const severeCasesByRequestedTimeSevere = Math.trunc(0.15 * infectionsByRequestedTimeSevere);
   const availableBeds = Math.trunc(0.35 * totalHospitalBeds);
