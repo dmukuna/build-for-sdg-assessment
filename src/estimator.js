@@ -5,7 +5,7 @@ const calcDays = (periodType, elapsedTime) => {
   } else if (periodType === 'weeks') {
     days = elapsedTime * 7;
   } else {
-    days = elapsedTime * 20;
+    days = elapsedTime * 30;
   }
   return days;
 };
