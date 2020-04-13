@@ -6,7 +6,8 @@
   "private": false,
   "main": "server.js",
   "engines": {
-    "node": "10.16.x"
+    "node": "10.16.3",
+    "npm": "6.11.3"
   },
   "scripts": {
     "start": "node ./build/server.js",
