@@ -5,10 +5,6 @@
   "license": "MIT",
   "private": false,
   "main": "server.js",
-  "engines": {
-    "node": "10.16.3",
-    "npm": "6.11.3"
-  },
   "scripts": {
     "start": "node ./build/server.js",
     "dev": "set NODE_ENV=development&&npm run dev_server",
