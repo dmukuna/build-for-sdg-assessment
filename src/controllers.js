@@ -32,7 +32,7 @@ const getLogs = (req, res) => {
 
   fs.readFile(fileLoc, (e, data) => {
     if (e) throw e;
-    res.send(data);
+    res.status(200).send(data);
   });
 };
 
