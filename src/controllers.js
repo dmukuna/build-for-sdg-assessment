@@ -1,7 +1,5 @@
 import xml2js from 'xml2js';
-// import xml from 'xml';
 import fs from 'fs';
-import path from 'path';
 import estimator from './estimator';
 
 const jsonEstimator = (req, res) => {
@@ -24,15 +22,25 @@ const xmlEstimator = (req, res) => {
 };
 
 const getLogs = (req, res) => {
-  res.set('Content-Type', 'text/plain');
-
-  const staticBasePath = './';
-  let fileLoc = path.resolve(staticBasePath);
-  fileLoc = path.join(fileLoc, 'access.log');
-
-  fs.readFile(fileLoc, (e, data) => {
+  fs.readFile('./logs.json', 'utf-8', (e, data) => {
     if (e) throw e;
-    res.status(200).send(data);
+
+    const logsArr = JSON.parse(data).logs;
+
+    const newLogsArr = logsArr.map((log) => {
+      const {
+        method, url, statusCode, processTime
+      } = log;
+      const formattedTime = (processTime < 10) ? `0${processTime}`.slice(-2) : processTime;
+      const unit = 'ms';
+
+      const logString = `${method}  ${url}  ${statusCode} ${formattedTime}${unit}`;
+      return logString;
+    });
+
+    res.set('Content-Type', 'text/plain');
+    const logsStr = newLogsArr.join('\n');
+    res.status(200).send(logsStr);
   });
 };
 
