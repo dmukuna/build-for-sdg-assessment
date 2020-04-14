@@ -17,7 +17,7 @@ const xmlEstimator = (req, res) => {
 
   const xmlOutput = builder.buildObject(estimateObj);
 
-  res.set('Content-Type', 'application/xm');
+  res.set('Content-Type', 'application/xml');
   res.status(200).send(xmlOutput);
 };
 
